@@ -1,3 +1,5 @@
+"""Es buena práctica poner aquí de qué trata el código.
+Qué es lo que se quiere predecir, qué métodos se incluyen."""
 from sklearn.metrics import mean_squared_error
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,6 +9,8 @@ from modules.procesamiento_datos import CustomScaler
 import pandas as pd
 from sklearn.impute import SimpleImputer
 
+"""Para hacer un código modular, todo esto se puede poner en una función.
+Entonces es posible poder llamar a la función ya sea desde aquí o desde otro script/notebook."""
 # Cargar los datos
 data = pd.read_csv('data/hotel_bookings.csv')
 
@@ -23,8 +27,14 @@ data['lead_time'] = imputer_lead_time.fit_transform(data[['lead_time']])
 numeric_cols = data.select_dtypes(include=['number']).columns
 imputer_numeric = SimpleImputer(strategy='mean')
 data[numeric_cols] = imputer_numeric.fit_transform(data[numeric_cols])
+"""Habría que tener cuidado que no impute sobre el target, ya que ahora es numérico (entiendo que el target
+es lead_time).
+Si imputamos sobre target, estamos agregando data falsa al modelo."""
 
 # Seleccionar características relevantes
+"""Seguro que estas variables salen de un análisis exploratorio, pero para aprender puede ser bueno armar un pequeño
+informe de por qué se eligieron estas variables. Por ejemplo, si se corroboró que tenían correlación con la variable target.
+"""
 X = data[['adults', 'stays_in_weekend_nights']].values
 Y = data['lead_time'].values
 
@@ -42,7 +52,10 @@ y_pred = model.predict(X_scaled)
 # Calcular el error cuadrático medio
 mse = mean_squared_error(Y, y_pred)
 print("Error cuadrático medio:", mse)
-
+"""Seguro lo vayan a ver en el curso, pero por lo general se reportan las métricas y las funciones de pérdida 
+sobre el conjunto de validación o test.
+Si se reportan sobre el mismo conjunto que se entrenó, no se podría ver el poder predictivo del modelo.
+"""
 graficador = Graficador()
 
 graficador.graficar_regresion(X_scaled, Y, y_pred, 
@@ -52,4 +65,8 @@ graficador.graficar_regresion(X_scaled, Y, y_pred,
                               ylabel='lead_time', 
                               titulo_0='Regresión del lead_time vs Adults (scaled)', 
                               titulo_1='Regresión del lead_time vs Stays in Weekend Nights (scaled)')
+"""Habría que ver los parámetros que se le está pasando al método de graficar regresión, porque parece que sólo acepta 
+una etiqueta por eje (x o y, así como el título).
 
+Debido a esto, me doy cuenta cómo X_scaled tiene dos columnas, debería pasarse 1 sóla columna, porque el gráfico
+acepta sólo un vector por eje."""
